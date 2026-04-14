@@ -1,0 +1,48 @@
+package com.example.esspringboot;
+
+import com.baomidou.mybatisplus.generator.FastAutoGenerator;
+import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
+import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+
+import java.sql.Types;
+
+public class CodeGenerator {
+    public static void main(String[] args) {
+                                //配置数据库参数
+        FastAutoGenerator.create("jdbc:mysql://localhost:3306/es?serverTimezone=UTC", "root", "01459929060")
+                //全局配置
+                .globalConfig(builder -> {
+                    builder.author("your_name") // 设置作者
+                            //.enableSwagger() // 开启 swagger 模式
+                            .outputDir("src\\main\\java"); // 指定输出目录
+                })
+                //数据源相关配置
+                .dataSourceConfig(builder ->
+                        builder.typeConvertHandler((globalConfig, typeRegistry, metaInfo) -> {
+                            int typeCode = metaInfo.getJdbcType().TYPE_CODE;
+                            if (typeCode == Types.SMALLINT) {
+                                // 自定义类型转换
+                                return DbColumnType.INTEGER;
+                            }
+                            return typeRegistry.getColumnType(metaInfo);
+                        })
+                )
+                //包配置
+                .packageConfig(builder ->
+                        builder.parent("com.example.esspringboot") // 设置父包名
+                                //.moduleName("system") // 设置父包模块名
+                                //.pathInfo(Collections.singletonMap(OutputFile.xml, "D://")) // 设置mapperXml生成路径
+                )
+                //策略配置
+                .strategyConfig(builder ->
+                        builder.addInclude("user","product","order","message","favorite")  // 设置需要生成的表名(表名之间逗号分隔)
+
+                                //.addTablePrefix("t_", "c_") // 设置过滤表前缀
+
+                )
+                //模板配置
+                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
+                //执行
+                .execute();
+    }
+}

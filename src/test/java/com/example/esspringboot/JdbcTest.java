@@ -19,7 +19,7 @@ public class JdbcTest {
             Class.forName(driverClass);
             // 2. 获取数据库连接
             connection = DriverManager.getConnection(url, username, password);
-            System.out.println("✅ 原生JDBC数据库连接成功！");
+           System.out.println("✅ 原生JDBC数据库连接成功！");
             System.out.println("连接对象：" + connection);
         } catch (ClassNotFoundException e) {
             System.out.println("❌ 驱动加载失败！");
