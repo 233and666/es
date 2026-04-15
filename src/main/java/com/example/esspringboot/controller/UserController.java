@@ -5,14 +5,12 @@ import com.example.esspringboot.entity.User;
 import com.example.esspringboot.service.IUserService;
 import com.example.esspringboot.util.JwtUtil;
 import com.example.esspringboot.util.Result;
+import com.example.esspringboot.tokenBlack.TokenBlacklist;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -131,6 +129,32 @@ public class UserController {
         } catch (Exception e) {
             return Result.error("系统错误，请稍后重试");
         }
+    }
+
+    @Autowired
+    private TokenBlacklist tokenBlacklist;
+    @PostMapping("/logout")
+    //用户退出登录 → 将Token加入黑名单 → 后续请求验证时检查黑名单 → 黑名单中的Token拒绝访问
+    public Result<String> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+            if (JwtUtil.validateToken(token)) {
+                // 记录退出日志
+                Long userId = JwtUtil.getUserIdFromToken(token);
+                String username = JwtUtil.getUsernameFromToken(token);
+
+                System.out.println("用户退出登录 - 用户ID: " + userId + ", 用户名: " + username);
+
+                // 关键步骤：将Token加入黑名单
+                tokenBlacklist.addToBlacklist(token);
+
+                return Result.success("退出登录成功，Token已立即失效");
+            }
+        }
+
+        return Result.success("退出登录成功");
     }
 
 

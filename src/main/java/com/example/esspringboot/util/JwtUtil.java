@@ -33,12 +33,12 @@ public class JwtUtil {
         claims.put("username", username);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(KEY, SignatureAlgorithm.HS256)
-                .compact();
+                .setClaims(claims)// 设置自定义声明信息
+                .setSubject(username)// 设置主题为用户名
+                .setIssuedAt(new Date())// 设置签发时间为当前时间
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))// 设置过期时间为当前时间加上过期时间
+                .signWith(KEY, SignatureAlgorithm.HS256)// 使用HMAC-SHA256算法和密钥签名
+                .compact();// 生成最终的JWT字符串
     }
 
     /**

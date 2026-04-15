@@ -30,6 +30,8 @@ public class Product implements Serializable {
 
     private String image;
 
+    private String category;
+
     private Long userId;
 
     private String status;
@@ -108,9 +110,18 @@ public class Product implements Serializable {
             ", price = " + price +
             ", description = " + description +
             ", image = " + image +
+            ", category = " + category +
             ", userId = " + userId +
             ", status = " + status +
             ", createTime = " + createTime +
             "}";
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }
