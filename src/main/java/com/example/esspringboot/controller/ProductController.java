@@ -86,7 +86,9 @@ public class ProductController {
                 }
                 //替换文件名中的特殊字符为空字符串
                 // 保留：中文、字母、数字、下划线、横线；移除【】、空格、括号等
-                filename = filename.replaceAll("[^a-zA-Z0-9_\u4e00-\u9fa5-]", "");
+                if (filename != null) {
+                    filename = filename.replaceAll("[^a-zA-Z0-9_\u4e00-\u9fa5-]", "");
+                }
 
                 //使用当前时间戳作为文件名的前缀，确保唯一性
                 // fileName = LocalDateTime.now()+"-"+filename + fileExt;
