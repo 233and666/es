@@ -3,6 +3,7 @@ package com.example.esspringboot.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
  */
 public class Product implements Serializable {
 
+    @Serial//这个注解,给代码增加了一道编译期的安全检查。
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
