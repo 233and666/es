@@ -1,15 +1,16 @@
 package com.example.esspringboot.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.esspringboot.entity.Product;
 import com.example.esspringboot.service.IProductService;
 import com.example.esspringboot.util.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -31,7 +32,7 @@ import java.time.LocalDateTime;
 public class ProductController {
     @Autowired
     private IProductService productService;
-
+    // 发布商品
     @PostMapping("/publish")
     public Result<String> publish(
             @RequestParam("title") String title,
@@ -57,6 +58,7 @@ public class ProductController {
         product.setPrice(price);
         product.setCategory(category);
         product.setDescription(description);
+        product.setStatus("在售");
         product.setUserId(userId);
         product.setCreateTime(LocalDateTime.now());
         if (image!=null && !image.isEmpty()){
@@ -134,4 +136,137 @@ public class ProductController {
         }
     }
 
+    // 更新商品
+    @PutMapping("/update/{id}")
+    public Result<String> updateProduct(@PathVariable Long id, @RequestBody Product product,
+                                            HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            return Result.error("用户未登录");
+        }
+        // 检查商品是否存在
+        Product existingProduct = productService.getById(id);
+        if (existingProduct == null) {
+            return Result.error("商品不存在");
+        }
+        // 检查用户是否有权限修改该商品
+        if (!existingProduct.getUserId().equals(userId)) {
+            return Result.error("无权修改此商品");
+        }
+        // 更新商品信息
+        product.setId(id);
+        try {
+            boolean saveSuccess=productService.saveOrUpdate(product);
+            if(saveSuccess){
+                return Result.success("商品更新成功");
+            }else {
+                return  Result.error("更新失败");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return Result.error("服务器异常，更新失败");
+        }
+    }
+    // 下架或上架商品
+    @PostMapping("/off/{id}")
+    public Result<String> offProduct(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            return Result.error("用户未登录");
+        }
+        // 检查商品是否存在
+        Product product = productService.getById(id);
+        if (product == null) {
+            return Result.error("商品不存在");
+        }
+        // 检查用户是否有权限下架该商品
+        if (!product.getUserId().equals(userId)) {
+            return Result.error("无权操作此商品");
+        }
+        // 下架或上架商品
+        if(product.getStatus().equals("在售")){
+            product.setStatus("下架");
+        }else if(product.getStatus().equals("下架")){
+            product.setStatus("在售");
+        }
+        try {
+            boolean saveSuccess = productService.saveOrUpdate(product);
+            if (saveSuccess) {
+                return Result.success("商品操作成功");
+            } else {
+                return Result.error("操作失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("服务器异常，操作失败");
+        }
+    }
+
+    //删除商品
+    @DeleteMapping("/delete/{id}")
+    public Result<String> delete(@PathVariable Long id,HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            return Result.error("用户未登录");
+        }
+        // 检查商品是否存在
+        Product product = productService.getById(id);
+        if (product == null) {
+            return Result.error("商品不存在");
+        }
+        // 检查用户是否有权限删除该商品
+        if (!product.getUserId().equals(userId)) {
+            return Result.error("无权删除此商品");
+        }
+        // 删除商品
+        try {
+            boolean deleteSuccess = productService.removeById(id);
+            if (deleteSuccess) {
+                return Result.success("商品删除成功");
+            } else {
+                return Result.error("删除失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("服务器异常，删除失败");
+        }
+    }
+
+    //商品详细
+    @GetMapping("/detail/{id}")
+    public Result<Product> detail(@PathVariable Long id){
+        Product product = productService.getById(id);
+        if (product == null) {
+            return Result.error("商品不存在");
+        }
+        return Result.success(product);
+    }
+
+    //我的商品列表
+    @GetMapping("/my")
+    public Result<IPage<Product>> my(HttpServletRequest request,
+                      @RequestParam(defaultValue = "1") int pageNum,     // 页码
+                      @RequestParam(defaultValue = "10") int pageSize,   //每页数量
+                      @RequestParam(defaultValue = "全部") String status
+                                                                        ){
+        Long userId = (Long) request.getAttribute("userId");
+        //防止前端乱传数据
+        if (pageNum < 1) pageNum = 1;
+        if (pageSize < 1 || pageSize > 100) pageSize = 10;
+        // 创建分页对象
+        Page<Product> page = new Page<>(pageNum, pageSize);
+
+        QueryWrapper<Product> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("user_id",userId);
+        if (!status.equals("全部")){
+            queryWrapper.eq("status",status);
+        }
+        queryWrapper.orderByDesc("create_time");//按时间排序
+        IPage<Product> productIPage=productService.page(page,queryWrapper);
+        return Result.success(productIPage,"获取我的商品列表成功");
+    }
+
+
 }
+
