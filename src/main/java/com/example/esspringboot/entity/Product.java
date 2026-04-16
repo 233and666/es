@@ -40,7 +40,7 @@ public class Product implements Serializable {
 
     private Long userId;
 
-    private String status;
+    private String status;      //在售/已售/下架
 
     private LocalDateTime createTime;
 

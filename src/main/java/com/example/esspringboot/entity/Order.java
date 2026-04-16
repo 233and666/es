@@ -3,6 +3,7 @@ package com.example.esspringboot.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
  */
 public class Order implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -27,7 +29,7 @@ public class Order implements Serializable {
 
     private Long sellerId;
 
-    private String status;
+    private String status;         //待确认/已完成/已取消
 
     private LocalDateTime createTime;
 
