@@ -157,7 +157,21 @@ public class UserController {
         return Result.success("退出登录成功");
     }
 
+    //获取用户信息
+    @GetMapping("/info")
+    public Result<User> getUserInfo( HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            return Result.error("用户未登录");
+        }
+        User user = userService.getById(userId);
+        // 清空密码
+        if(user.getPassword()!=null){
+            user.setPassword(null);
+        }
+        return Result.success(user);
 
+    }
 
 
 }
