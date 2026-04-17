@@ -6,11 +6,8 @@ import com.example.esspringboot.service.IMessageService;
 import com.example.esspringboot.util.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,8 +20,8 @@ import java.util.List;
  * @author your_name
  * @since 2026-04-15
  */
-@Controller
-@RequestMapping("/message")
+@RestController
+@RequestMapping("/api/message")
 public class MessageController {
     @Autowired
     private IMessageService messageService;

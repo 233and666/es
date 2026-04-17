@@ -16,11 +16,19 @@ public class JwtInterceptor implements HandlerInterceptor {
     private TokenBlacklist tokenBlacklist;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+
+        System.out.println("拦截请求路径: " + request.getRequestURI());
+
+
         // 从请求头中获取JWT
                String token = request.getHeader("Authorization");
         // 验证JWT是否有效
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
+
+            System.out.println("获取到的JWT: " + token);//=========================
+
             // 验证JWT是否有效且不在黑名单黑名单中
             if (JwtUtil.validateToken(token) && !tokenBlacklist.isBlacklisted(token)) {
                 // 将用户信息存入请求属性，供Controller使用
@@ -37,6 +45,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         }
         // 如果JWT无效，返回401错误
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        System.out.println("JWT无效或未提供=============");
         return false;// 拒绝请求
     }
 }

@@ -29,8 +29,8 @@ import java.time.LocalDateTime;
  * @author your_name
  * @since 2026-04-15
  */
-@Controller
-@RequestMapping("/product")
+@RestController
+@RequestMapping("/api/product")
 public class ProductController {
     @Autowired
     private IProductService productService;

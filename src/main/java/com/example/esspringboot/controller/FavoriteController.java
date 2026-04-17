@@ -17,8 +17,8 @@ import org.springframework.stereotype.Controller;
  * @author your_name
  * @since 2026-04-15
  */
-@Controller
-@RequestMapping("/favorite")
+@RestController
+@RequestMapping("/api/favorite")
 public class FavoriteController {
     @Autowired
     private IFavoriteService favoriteService;

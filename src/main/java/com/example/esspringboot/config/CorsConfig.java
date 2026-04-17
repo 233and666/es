@@ -13,7 +13,8 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         // 允许前端地址（你的Vue项目运行地址）
 
-        config.addAllowedOriginPattern("*");// config.addAllowedOrigin("http://localhost:5173");
+       config.addAllowedOriginPattern("*");//config.addAllowedOrigin("http://localhost:5173");
+
 
         // 允许所有请求方法（GET/POST/PUT/DELETE）
         config.addAllowedMethod("*");
@@ -27,6 +28,7 @@ public class CorsConfig {
         // 配置哪些接口需要跨域（这里配置所有/api开头的接口）
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);
+
 
         return new CorsFilter(source);
     }

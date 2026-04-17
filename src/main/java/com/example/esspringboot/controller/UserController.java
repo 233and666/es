@@ -23,15 +23,16 @@ import java.util.Map;
  * @author your_name
  * @since 2026-04-15
  */
-@Controller
-@RequestMapping("/user")
+@RestController
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
     private IUserService userService;
 
     @PostMapping("/register")
-    public Result<User> register(@RequestBody User user) {
+    public Result<User> register(@RequestBody User user,HttpServletRequest request) {
+        System.out.println("注册请求路径: " + request.getRequestURI());
         // 步骤 1：基础校验（用户名、密码不能为空）
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
             return Result.error("用户名不能为空");
@@ -45,16 +46,19 @@ public class UserController {
         User user1 = userService.getOne(queryWrapper);
         // 步骤 3：如果用户名已存在，返回错误
         if(user1 != null){
+            System.out.println("用户名已被注册，请更换");
             return Result.error("用户名已被注册，请更换");
         }
         // 步骤 4：保存新用户
         boolean saveSuccess = userService.save(user);
-        return saveSuccess ? Result.success(user) : Result.error("注册失败");
+
+        return saveSuccess ? Result.success(user) : Result.error("注册失败!");
 
     }
 
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@RequestBody User loginUser, HttpSession session) {
+        System.out.println("登录进来了========= ");
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", loginUser.getUsername());
         User user = userService.getOne(queryWrapper);
@@ -65,24 +69,21 @@ public class UserController {
         if (!user.getPassword().equals(loginUser.getPassword())) {
             return Result.error("密码错误");
         }
-
 //        session.setAttribute("loginUser", user);登录信息放到会话域
-
 
         // 生成JWT Token
         String token = JwtUtil.generateToken(user.getId(), user.getUsername());
-
         //清空密码
         user.setPassword(null);
         // 返回用户信息和Token
         Map<String, Object> result = new HashMap<>();
         result.put("user", user);
         result.put("token", token);
-
+        System.out.println("登录成功========= ");
         return Result.success(result, "登录成功");
     }
 
-    @PostMapping("/update-password")
+    @PostMapping("/updatePassword")
     public Result<Object> updatePassword(@RequestBody Map<String, String> passwordData,
                                          HttpServletRequest request) {
         try {

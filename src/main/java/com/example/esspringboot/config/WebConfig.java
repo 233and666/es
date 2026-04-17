@@ -14,10 +14,24 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtInterceptor)
-                .addPathPatterns("/user/update-password") // 保护密码修改接口
 
-                .excludePathPatterns("/user/login", "/user/register"); // 排除登录注册
+        registry.addInterceptor(jwtInterceptor)
+
+                .addPathPatterns(
+                       "/api/user/**",
+                       "/api/favorite/**",
+                       "/api/order/**",
+                       "/api/message/**",
+                       "/api/product/**"
+                )
+
+                .excludePathPatterns(
+                        "/api/user/login",
+                        "/api/user/register",  // 排除登录注册
+                        "/api/product/detail/*",       // 商品详情（公开访问）
+                        "/api/product/search",         // 商品搜索（公开访问）
+                        "/uploads/**"
+                        );
     }
 
 //    前端
