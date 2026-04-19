@@ -44,11 +44,17 @@ public class ProductController {
             @RequestParam(value = "image", required = false) MultipartFile image,
             HttpServletRequest request){
 
+        System.out.println("标题："+title);
+        System.out.println("价格："+price);
+        System.out.println("分类："+category);
+        System.out.println("描述："+description);
+        System.out.println("图片："+image);
         Long userId = (Long) request.getAttribute("userId");
         if (userId == null) {
             return Result.error("用户未登录");
         }
         if (title==null || title.trim().isEmpty()){
+
             return Result.error("标题不能为空");
         }
         if (price==null||price.compareTo(BigDecimal.ZERO)<0){
@@ -64,65 +70,17 @@ public class ProductController {
         product.setUserId(userId);
         product.setCreateTime(LocalDateTime.now());
         if (image!=null && !image.isEmpty()){
-
-            String contentType = image.getContentType();
-            if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType) && !"image/gif".equals(contentType)) {
-                return Result.error("只支持JPEG、PNG、GIF格式的图片");
-            }
-
-            // 验证文件大小
-            if (image.getSize() > 5 * 1024 * 1024) { // 5MB限制
-                return Result.error("图片大小不能超过5MB");
-            }
-
-            try{
-                String originalFilename = image.getOriginalFilename();//获取文件名
-                String filename=null;//文件名
-                String fileExt=null;//文件扩展名
-                String fileName=null;//最终文件名
-                if (originalFilename != null) {
-                    //获取文件名（不包含扩展名）
-                    filename = originalFilename.substring(0, originalFilename.lastIndexOf("."));
-                }
-                if (originalFilename != null) {
-                    //获取文件扩展名
-                    fileExt = originalFilename.substring(originalFilename.lastIndexOf("."));
-                }
-                //替换文件名中的特殊字符为空字符串
-                // 保留：中文、字母、数字、下划线、横线；移除【】、空格、括号等
-                if (filename != null) {
-                    filename = filename.replaceAll("[^a-zA-Z0-9_\u4e00-\u9fa5-]", "");
-                }
-
-                //使用当前时间戳作为文件名的前缀，确保唯一性
-                // fileName = LocalDateTime.now()+"-"+filename + fileExt;
-                fileName=System.currentTimeMillis() + "_" + filename + fileExt;
-
-                // 确定存储路径（项目根目录下的uploads/images/product）
-                String projectRoot = System.getProperty("user.dir"); // 获取项目根目录
-                //        项目根/uploads/images/
-                String url = projectRoot + File.separator + "uploads" + File.separator + "image"  + File.separator;
-                // 处理Windows路径编码问题（比如空格、中文）
-                url = java.net.URLDecoder.decode(url, StandardCharsets.UTF_8);
-                File dest=new File(url);
-                //先创建目录
-                if (!dest.exists()) {
-                    dest.mkdirs();
-                }
-                //指向最终要保存的文件（目录+唯一文件名）
-                File destFile = new File(url+fileName);
-                image.transferTo(destFile);//将文件上传到指定目录
-
-                //生成存入数据库的文件访问地址（前端能直接访问的路径）
-                String path="/uploads/image/"+fileName;
-
-                product.setImage(path);
-
+            try {
+                String imagePath = productService.handleImageUpload(image);
+                System.out.println("图片路径：" + imagePath);
+                product.setImage(imagePath);
             } catch (Exception e) {
                 e.printStackTrace();
                 return Result.error("文件上传失败：" + e.getMessage());
             }
         }
+        
+        
         try {
             boolean saveSuccess=productService.save(product);
             if(saveSuccess){
@@ -139,10 +97,20 @@ public class ProductController {
     }
 
     // 更新商品
-    @PutMapping("/update/{id}")
-    public Result<String> updateProduct(@PathVariable Long id, @RequestBody Product product,
-                                            HttpServletRequest request) {
+    @PostMapping("/update/{id}")
+    public Result<String> updateProduct(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("category") String category,
+            @RequestParam("description") String description,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "deleteImage", required = false, defaultValue = "false") Boolean deleteImage,
+            HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
+        System.out.println("更新商品用户ID：======"+userId);
+        System.out.println("更新商品image：======"+image);
+        System.out.println("更新商品deleteImage：======"+deleteImage);
         if (userId == null) {
             return Result.error("用户未登录");
         }
@@ -156,16 +124,44 @@ public class ProductController {
             return Result.error("无权修改此商品");
         }
         // 更新商品信息
-        product.setId(id);
-        try {
-            boolean saveSuccess=productService.saveOrUpdate(product);
-            if(saveSuccess){
-                return Result.success("商品更新成功");
-            }else {
-                return  Result.error("更新失败");
+        existingProduct.setTitle(title);
+        existingProduct.setPrice(price);
+        existingProduct.setCategory(category);
+        existingProduct.setDescription(description);
+        
+        // 处理图片上传
+        if (image != null && !image.isEmpty()) {
+            try {
+                String imagePath = productService.handleImageUpload(image);
+                existingProduct.setImage(imagePath);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return Result.error("图片上传失败");
             }
+        } else if (deleteImage) {
+            // 删除图片
+            System.out.println("删除图片路径=======："+existingProduct.getImage());
+            existingProduct.setImage(null);
         }
-        catch (Exception e){
+        
+        try {
+            // 使用UpdateWrapper明确更新字段，确保null值也能被更新
+            com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper<Product> wrapper = new com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper<>();
+            wrapper.eq("id", id)
+                   .set("title", title)
+                   .set("price", price)
+                   .set("category", category)
+                   .set("description", description)
+                   .set("image", existingProduct.getImage());
+                    
+            boolean saveSuccess = productService.update(wrapper);
+            System.out.println("更新商品=======："+existingProduct);
+            if (saveSuccess) {
+                return Result.success("商品更新成功");
+            } else {
+                return Result.error("更新失败");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return Result.error("服务器异常，更新失败");
         }
@@ -311,4 +307,3 @@ public class ProductController {
 
 
 }
-

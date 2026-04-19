@@ -34,9 +34,11 @@ public class JwtInterceptor implements HandlerInterceptor {
                 // 将用户信息存入请求属性，供Controller使用
                 Long userId = JwtUtil.getUserIdFromToken(token);
                 request.setAttribute("userId", userId);
+                System.out.println("用户ID: " + userId+"已经放行请求====");//=========================
                 return true;// 放行请求
             }else {
                 // Token无效或在黑名单中
+                System.out.println("Token无效或已退出登录=============");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());// 401错误
                 response.getWriter().write("{\"error\":\"Token无效或已退出登录\"}");// 返回错误信息
                                     //转义后的 JSON 字符串，实际内容为：{"error":"Token无效或已退出登录"}。

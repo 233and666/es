@@ -4,6 +4,7 @@ import com.example.esspringboot.interceptor.JwtInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -11,10 +12,19 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private JwtInterceptor jwtInterceptor;
+    //配置静态资源路径
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 配置uploads目录为静态资源
+        String uploadsPath = "D:/java开发路线学习/ES-springboot/uploads/";
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadsPath)
+                .setCachePeriod(3600)
+                .resourceChain(true);
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
         registry.addInterceptor(jwtInterceptor)
 
                 .addPathPatterns(
@@ -28,11 +38,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/api/user/login",
                         "/api/user/register",  // 排除登录注册
+                        "/api/user/logout",  // 排除退出登录
                         "/api/product/detail/*",       // 商品详情（公开访问）
                         "/api/product/search",         // 商品搜索（公开访问）
                         "/uploads/**"
                         );
     }
+
 
 //    前端
 //  ↓ (发送请求)

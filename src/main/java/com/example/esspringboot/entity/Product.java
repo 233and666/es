@@ -43,6 +43,7 @@ public class Product implements Serializable {
     private String status;      //在售/已售/下架
 
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 
     @Override
     public String toString() {

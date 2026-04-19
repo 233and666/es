@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 /**
  * <p>
  *  前端控制器
@@ -25,6 +27,7 @@ public class FavoriteController {
     //添加收藏
     @PostMapping("/add")
     public Result<String> addFavorite(@RequestParam("productId")Long productId, HttpServletRequest request){
+        System.out.println("添加收藏，商品ID：========"+productId);
         Long userId = (Long) request.getAttribute("userId");
         Favorite favorite=new Favorite();
         favorite.setUserId(userId);
@@ -47,6 +50,32 @@ public class FavoriteController {
             return Result.error("收藏记录不存在");
         }
     }
+    //判断是否收藏了商品
+    @GetMapping("/isFavorite")
+    public Result<String> isFavorite(@RequestParam("productId")Long productId, HttpServletRequest request){
+        System.out.println("判断是否收藏了商品，商品ID：========"+productId);
+        Long userId = (Long) request.getAttribute("userId");
+        QueryWrapper<Favorite> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("product_id",productId)
+                    .eq("user_id",userId);
+        Favorite favorite=favoriteService.getOne(queryWrapper);
+        if(favorite != null) {
+            return Result.success("收藏成功");
+        } else {
+            return Result.error("快先收藏商品");
+        }
+    }
+    //收藏列表
+    @GetMapping("/list")
+    public Result<List<Favorite>> listFavorite(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        QueryWrapper<Favorite> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        List<Favorite> favoritesList = favoriteService.list(queryWrapper);
+        return Result.success(favoritesList);
+
+    }
+
 
 
 

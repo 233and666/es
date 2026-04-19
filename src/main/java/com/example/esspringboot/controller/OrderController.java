@@ -36,6 +36,7 @@ public class OrderController {
     //创建订单
     @PostMapping("/create")
     public Result<String> createOrder(@RequestParam("productId")Long productId, HttpServletRequest request){
+        System.out.println("创建订单，商品ID：========"+productId);
         Long userId = (Long) request.getAttribute("userId");
         Order order = new Order();
         if (productId == null) {
