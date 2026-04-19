@@ -2,7 +2,9 @@
 
 #### 错误过程
 1.理解@RestController和@Controller注解的区别
+
    （1）@RestController：返回值被 HttpMessageConverter 转换为 JSON/XML 写入 Body
+
    （2）@Controller ：解析为视图路径
 
 
