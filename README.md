@@ -1,5 +1,11 @@
 # 二手交易
 
+#### 错误过程
+1.理解@RestController和@Controller注解的区别
+     @RestController：返回值被 HttpMessageConverter 转换为 JSON/XML 写入 Body
+      @Controller ：解析为视图路径
+
+
 #### 介绍
 第一次使用，不太会
 
