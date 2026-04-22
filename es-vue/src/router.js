@@ -10,7 +10,10 @@ import myProduct from './components/product/myProduct.vue'
 //import updateProduct from './components/product/update.vue'
 import searchProduct from './components/product/searchProduct.vue'
 import productDetail from './components/product/productDetail.vue'
-import favoriteList from './components/user/favoriteList.vue'
+import favoriteList from './components/favorite/favoriteList.vue'
+import myOrder from './components/order/myOrder.vue'
+import profile from './components/user/profile.vue'
+import service from './components/message/service.vue'
 
 
 
@@ -25,6 +28,9 @@ const routes = [
     { path: '/searchProduct', component: searchProduct },
     { path: '/productDetail/:id', component: productDetail },
     { path: '/favoriteList', component: favoriteList },
+    { path: '/myOrder', component: myOrder },
+    { path: '/profile', component: profile },
+    { path: '/service', component: service },
 ]
 
 const router = createRouter({

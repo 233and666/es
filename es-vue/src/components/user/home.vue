@@ -153,6 +153,18 @@ const goPage = (type) => {
     // 跳转到我的收藏页面
     router.push('/favoriteList')
   }
+  if (type === 'order') {
+    // 跳转到我的订单页面
+    router.push('/myOrder')
+  }
+  if (type === 'profile') {
+    // 跳转到个人中心页面
+    router.push('/profile')
+  }
+  if (type === 'service') {
+    // 跳转到客服帮助页面
+    router.push('/service')
+  }
 
   
   showMenu.value = false // 跳转自动关闭菜单

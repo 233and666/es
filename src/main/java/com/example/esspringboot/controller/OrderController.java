@@ -101,6 +101,9 @@ public class OrderController {
         }
         order.setStatus("已取消");//订单状态
         orderService.updateById(order);//更新订单
+        Product product = productService.getById(order.getProductId());
+        product.setStatus("在售");
+        productService.updateById(product);//更新商品
         return Result.success("订单取消成功");
     }
 
@@ -110,7 +113,15 @@ public class OrderController {
         Long userId = (Long) request.getAttribute("userId");
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("buyer_id", userId);
-        return Result.success(orderService.list(queryWrapper));
+        // 关联查询商品信息
+        List<Order> list = orderService.list(queryWrapper);
+        for (Order order : list) {
+            Product product = productService.getById(order.getProductId());
+
+            order.setProduct(product);
+        }
+        System.out.println("我买到的订单：" + list);
+        return Result.success(list);
     }
 
     //我卖出的订单
@@ -119,21 +130,37 @@ public class OrderController {
         Long userId = (Long) request.getAttribute("userId");
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("seller_id", userId);
-        return Result.success(orderService.list(queryWrapper));
+        // 关联查询商品信息
+        List<Order> list = orderService.list(queryWrapper);
+        for (Order order : list) {
+            Product product = productService.getById(order.getProductId());
+
+            order.setProduct(product);
+        }
+        System.out.println("我卖出的订单：" + list);
+        return Result.success(list);
     }
 
+    //支付订单
+    @PostMapping("/pay")
+    public Result<String> payOrder(@RequestParam("orderId")Long orderId, HttpServletRequest request){
+        if (orderId == null) {
+            return Result.error("订单ID不能为空");
+        }
+        Long userId = (Long) request.getAttribute("userId");
+        Order order = orderService.getById(orderId);//根据订单ID查询订单
+        if(order == null){
+            return Result.error("订单不存在");
+        }
+        if(!order.getBuyerId().equals(userId)){
+            return Result.error("您不是该订单的买家");
+        }
+        order.setStatus("已完成");//订单状态
+        orderService.updateById(order);//更新订单
+        return Result.success("订单支付成功");
+    }
+
+
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

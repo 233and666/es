@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElEmpty, ElLoading } from 'element-plus'
 import { api } from '../../api/index.js'
+import { ArrowLeft } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -22,7 +23,7 @@ const getFavoriteList = async () => {
       ElMessage.error('获取收藏列表失败')
     }
   } catch (error) {
-    ElMessage.error('网络异常，请稍后重试')
+    ElMessage.error('wd网络异常，请稍后重试')
   } finally {
     loading.value = false
   }
@@ -78,28 +79,28 @@ onMounted(() => {
 
     <div class="favorite-content" v-loading="loading">
       <div v-if="favorites.length > 0" class="favorite-items">
-        <div v-for="item in favorites" :key="item.product.id" class="favorite-item">
+        <div v-for="item in favorites" :key="item.id" class="favorite-item">
           <div class="item-image">
-            <img v-if="item.product.image" :src="'http://localhost:8080' + item.product.image" :alt="item.product.title" />
+            <img v-if="item.image" :src="'http://localhost:8080' + item.image" :alt="item.title" />
             <div v-else class="no-image">无图片</div>
           </div>
           <div class="item-info">
-            <h3 class="item-title" @click="goToProductDetail(item.product.id)">{{ item.product.title }}</h3>
-            <div class="item-price">¥{{ item.product.price }}</div>
+            <h3 class="item-title" @click="goToProductDetail(item.id)">{{ item.title }}</h3>
+            <div class="item-price">¥{{ item.price }}</div>
             <div class="item-category">
               <span class="label">分类：</span>
-              <span class="value">{{ item.product.category }}</span>
+              <span class="value">{{ item.category }}</span>
             </div>
             <div class="item-status">
               <span class="label">状态：</span>
-              <el-tag :type="item.product.status === '在售' ? 'success' : 'info'">{{ item.product.status }}</el-tag>
+              <el-tag :type="item.status === '在售' ? 'success' : 'info'">{{ item.status }}</el-tag>
             </div>
             <div class="item-actions">
               <el-button
                   type="primary"
                   size="small"
-                  @click="buyProduct(item.product.id)"
-                  :disabled="item.product.status !== '在售'"
+                  @click="buyProduct(item.id)"
+                  :disabled="item.status !== '在售'"
                   class="buy-button"
               >
                 <el-icon><ShoppingCart /></el-icon>
@@ -108,7 +109,7 @@ onMounted(() => {
               <el-button
                   type="danger"
                   size="small"
-                  @click="cancelFavorite(item.product.id)"
+                  @click="cancelFavorite(item.id)"
                   class="cancel-button"
               >
                 <el-icon><Trash /></el-icon>
@@ -117,7 +118,7 @@ onMounted(() => {
               <el-button
                   type="info"
                   size="small"
-                  @click="goToProductDetail(item.product.id)"
+                  @click="goToProductDetail(item.id)"
                   class="detail-button"
               >
                 查看详情
@@ -133,6 +134,19 @@ onMounted(() => {
             style="margin: 60px 0;"
         />
       </div>
+    </div>
+    
+    <!-- 返回按钮 -->
+    <div class="back-button-container">
+      <el-button 
+        class="back-button" 
+        type="primary" 
+        size="large"
+        @click="$router.back()"
+      >
+        <el-icon><ArrowLeft /></el-icon>
+        返回
+      </el-button>
     </div>
   </div>
 </template>
@@ -271,6 +285,37 @@ onMounted(() => {
   padding: 60px 0;
 }
 
+/* 返回按钮样式 */
+.back-button-container {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 1000;
+}
+
+.back-button {
+  background-color: #409eff;
+  border-color: #409eff;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #66b1ff;
+  border-color: #66b1ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
+}
+
+.back-button:active {
+  transform: translateY(0);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .favorite-list {
@@ -300,6 +345,16 @@ onMounted(() => {
   .cancel-button,
   .detail-button {
     flex: 1;
+  }
+  
+  .back-button-container {
+    right: 20px;
+    bottom: 20px;
+  }
+  
+  .back-button {
+    font-size: 14px;
+    padding: 10px 20px;
   }
 }
 </style>

@@ -97,7 +97,7 @@ const buyProduct = async () => {
     if (response.code === 200) {
       ElMessage.success('订单创建成功')
       // 跳转到订单页面
-      router.push('/order/myBuy')
+      router.push('/myOrder')
     } else {
       ElMessage.error('订单创建失败')
     }
@@ -121,17 +121,7 @@ onMounted(() => {
 <template>
   <div class="product-detail">
     <div class="page-header">
-      <div class="header-left">
-        <el-button
-            type="primary"
-            size="medium"
-            @click="goBack"
-        >
-          <el-icon><ArrowLeft /></el-icon>
-          返回列表
-        </el-button>
-        <h2>商品详情</h2>
-      </div>
+      <h2>商品详情</h2>
     </div>
 
     <div class="detail-content" v-loading="loading">
@@ -197,6 +187,19 @@ onMounted(() => {
         />
       </div>
     </div>
+    
+    <!-- 返回按钮 -->
+    <div class="back-button-container">
+      <el-button 
+        class="back-button" 
+        type="primary" 
+        size="large"
+        @click="$router.back()"
+      >
+        <el-icon><ArrowLeft /></el-icon>
+        返回列表
+      </el-button>
+    </div>
   </div>
 </template>
 
@@ -213,13 +216,7 @@ onMounted(() => {
   border-bottom: 1px solid #e4e7ed;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.header-left h2 {
+.page-header h2 {
   font-size: 18px;
   font-weight: 600;
   color: #333;
@@ -344,6 +341,37 @@ onMounted(() => {
   padding: 60px 0;
 }
 
+/* 返回按钮样式 */
+.back-button-container {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 1000;
+}
+
+.back-button {
+  background-color: #409eff;
+  border-color: #409eff;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #66b1ff;
+  border-color: #66b1ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.4);
+}
+
+.back-button:active {
+  transform: translateY(0);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .product-detail {
@@ -379,6 +407,16 @@ onMounted(() => {
   .buy-button,
   .favorite-button {
     width: 100%;
+  }
+  
+  .back-button-container {
+    right: 20px;
+    bottom: 20px;
+  }
+  
+  .back-button {
+    font-size: 14px;
+    padding: 10px 20px;
   }
 }
 </style>

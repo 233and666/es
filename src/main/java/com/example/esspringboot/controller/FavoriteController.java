@@ -2,13 +2,16 @@ package com.example.esspringboot.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.esspringboot.entity.Favorite;
+import com.example.esspringboot.entity.Product;
 import com.example.esspringboot.service.IFavoriteService;
+import com.example.esspringboot.service.IProductService;
 import com.example.esspringboot.util.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +27,10 @@ import java.util.List;
 public class FavoriteController {
     @Autowired
     private IFavoriteService favoriteService;
+    
+    @Autowired
+    private IProductService productService;
+    
     //添加收藏
     @PostMapping("/add")
     public Result<String> addFavorite(@RequestParam("productId")Long productId, HttpServletRequest request){
@@ -67,12 +74,19 @@ public class FavoriteController {
     }
     //收藏列表
     @GetMapping("/list")
-    public Result<List<Favorite>> listFavorite(HttpServletRequest request) {
+    public Result<List<Product>> listFavorite(HttpServletRequest request) {
+
         Long userId = (Long) request.getAttribute("userId");
         QueryWrapper<Favorite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         List<Favorite> favoritesList = favoriteService.list(queryWrapper);
-        return Result.success(favoritesList);
+        List<Product> productList = new ArrayList<>();
+        for(Favorite favorite : favoritesList) {
+            Product product = productService.getById(favorite.getProductId());
+            productList.add(product);
+        }
+        System.out.println("收藏列表：========"+productList);
+        return Result.success(productList);
 
     }
 

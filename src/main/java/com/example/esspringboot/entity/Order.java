@@ -1,7 +1,11 @@
 package com.example.esspringboot.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,10 +19,15 @@ import java.time.LocalDateTime;
  * @author your_name
  * @since 2026-04-15
  */
+
+@TableName("orders")
+@Setter
+@Getter
 public class Order implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -33,53 +42,9 @@ public class Order implements Serializable {
 
     private LocalDateTime createTime;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public Long getBuyerId() {
-        return buyerId;
-    }
-
-    public void setBuyerId(Long buyerId) {
-        this.buyerId = buyerId;
-    }
-
-    public Long getSellerId() {
-        return sellerId;
-    }
-
-    public void setSellerId(Long sellerId) {
-        this.sellerId = sellerId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
+    // 关联商品信息（非数据库字段）
+    @TableField(exist = false)
+    private Product product;
 
     @Override
     public String toString() {
@@ -90,6 +55,7 @@ public class Order implements Serializable {
             ", sellerId = " + sellerId +
             ", status = " + status +
             ", createTime = " + createTime +
+            ", product = " + product +
             "}";
     }
 }

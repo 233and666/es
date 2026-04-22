@@ -166,6 +166,7 @@ const goPublish = () => {
 // 返回首页
 const goBack = () => {
   router.push('/home')
+
 }
 
 // 表单验证
@@ -530,9 +531,9 @@ onMounted(() => {
       <el-button
           type="primary"
           size="medium"
-          @click="goBack"
+          @click="$router.back()"
       >
-        返回首页
+        返  回
       </el-button>
     </div>
   </div>

@@ -38,6 +38,8 @@ export const api={
         confirm:(orderId)=>request.post(`/order/confirm?orderId=${orderId}`),
         // 取消订单
         cancel:(orderId)=>request.post(`/order/cancel?orderId=${orderId}`),
+        //支付订单
+        pay:(orderId)=>request.post(`/order/pay?orderId=${orderId}`),
         //我买到的订单
         myBuy:()=>request.post('/order/myBuy'),
         //我卖出的订单
