@@ -1,6 +1,5 @@
 <template>
   <div class="login-container">
-    <!-- 背景装饰（增强版） -->
     <div class="background-decoration">
       <div class="circle circle-1"></div>
       <div class="circle circle-2"></div>
@@ -8,26 +7,21 @@
       <div class="circle circle-4"></div>
       <div class="circle circle-5"></div>
       <div class="blur-bg"></div>
-      <!-- 新增网格背景增强层次感 -->
       <div class="grid-bg"></div>
     </div>
 
-    <!-- 登录卡片 -->
     <div class="login-card">
-      <!-- 左侧图片区域 -->
       <div class="login-left">
         <div class="welcome-text">
-          <h1>欢迎回来</h1>
-          <p>登录您的账户，开始使用ES管理系统</p>
+          <h1>管理中心</h1>
+          <p>登录您的管理员账户，管理系统数据</p>
         </div>
         <div class="illustration">
-          <div class="icon-user">
+          <div class="icon-admin">
             <el-icon size="80" color="#fff">
-              <User />
             </el-icon>
           </div>
         </div>
-        <!-- 新增装饰元素 -->
         <div class="left-decoration">
           <div class="dot"></div>
           <div class="dot"></div>
@@ -35,11 +29,10 @@
         </div>
       </div>
 
-      <!-- 右侧表单区域 -->
       <div class="login-right">
         <div class="login-header">
-          <h2>用户登录</h2>
-          <p>请输入您的账户信息</p>
+          <h2>管理员登录</h2>
+          <p>请输入管理员账户信息</p>
         </div>
 
         <el-form
@@ -78,9 +71,6 @@
 
           <el-form-item>
             <el-checkbox v-model="rememberMe" class="remember-checkbox">记住我</el-checkbox>
-            <el-link type="primary" class="forgot-password" :underline="false">
-              忘记密码？
-            </el-link>
           </el-form-item>
 
           <el-form-item>
@@ -96,16 +86,9 @@
         </el-form>
 
         <div class="login-footer">
-          <p>还没有账户？
-            <el-link type="primary" :underline="false" @click="goToRegister" class="register-link">
-              立即注册
-            </el-link>
-          </p>
-          <p class="admin-link-wrapper">
-            <el-link type="info" :underline="false" @click="goToAdminLogin" class="admin-link">
-              管理员登录
-            </el-link>
-          </p>
+          <el-link type="primary" :underline="false" @click="goToUserLogin" class="back-link">
+            返回用户登录
+          </el-link>
         </div>
       </div>
     </div>
@@ -116,29 +99,26 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
 import { api } from '../../api/index.js'
 
 const router = useRouter()
 
 const loading = ref(false)
 const rememberMe = ref(false)
-// 新增输入框聚焦状态
+
 const inputState = ref({
   username: false,
   password: false
 })
 
-// 登录表单数据
 const loginForm = reactive({
   username: '',
   password: ''
 })
-// 表单校验错误提示
+
 const usernameError = ref('')
 const passwordError = ref('')
 
-// 新增输入框聚焦/失焦处理
 const inputFocus = (type) => {
   inputState.value[type] = true
 }
@@ -146,7 +126,6 @@ const inputBlur = (type) => {
   inputState.value[type] = false
 }
 
-// 表单校验：用户名非空
 const checkUsername = () => {
   if (!loginForm.username.trim()) {
     usernameError.value = '用户名不能为空'
@@ -154,7 +133,7 @@ const checkUsername = () => {
     usernameError.value = ''
   }
 }
-// 表单校验：密码非空
+
 const checkPassword = () => {
   if (!loginForm.password.trim()) {
     passwordError.value = '密码不能为空'
@@ -162,23 +141,24 @@ const checkPassword = () => {
     passwordError.value = ''
   }
 }
-// 处理登录
+
 const handleLogin = async () => {
   checkUsername()
   checkPassword()
   if (usernameError.value || passwordError.value) {
-    return // 有错误，不提交
+    return
   }
   try {
     loading.value = true
-    const response = await api.user.login(loginForm)
+    const response = await api.admin.login(loginForm)
     if (response.success) {
       localStorage.setItem('token', response.data.token)
+      localStorage.setItem('role', 'admin')
       if (rememberMe.value) {
-        localStorage.setItem('rememberedUsername', loginForm.username)
+        localStorage.setItem('rememberedAdmin', loginForm.username)
       }
-      ElMessage.success('登录成功！')
-      await router.push('/home')
+      ElMessage.success('管理员登录成功！')
+      await router.push('/adminHome')
     } else {
       ElMessage.error(response.message || '登录失败')
     }
@@ -190,52 +170,43 @@ const handleLogin = async () => {
   }
 }
 
-// 跳转到注册页面
-const goToRegister = () => {
-  router.push('/register')
+const goToUserLogin = () => {
+  router.push('/login')
 }
 
-// 跳转到管理员登录页面
-const goToAdminLogin = () => {
-  router.push('/adminlogin')
-}
-
-// 页面加载时检查是否有记住的用户名
-const checkRememberedUser = () => {
-  const rememberedUsername = localStorage.getItem('rememberedUsername')
-  if (rememberedUsername) {
-    loginForm.username = rememberedUsername
+const checkRememberedAdmin = () => {
+  const rememberedAdmin = localStorage.getItem('rememberedAdmin')
+  if (rememberedAdmin) {
+    loginForm.username = rememberedAdmin
     rememberMe.value = true
   }
 }
-// 初始化
-checkRememberedUser()
+
+checkRememberedAdmin()
 </script>
 
 <style scoped>
-/* 确保页面完全铺满屏幕 */
 :global(html),
 :global(body) {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden; /* 防止滚动条出现 */
+  overflow: hidden;
 }
 
 .login-container {
-  width: 100vw; /* 视口宽度100% */
-  height: 100vh; /* 视口高度100% */
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #4c1d95 100%);
   position: relative;
   overflow: hidden;
   font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
 }
 
-/* 背景装饰层 - 增强版 */
 .background-decoration {
   position: absolute;
   width: 100%;
@@ -244,7 +215,6 @@ checkRememberedUser()
   overflow: hidden;
 }
 
-/* 新增网格背景 */
 .grid-bg {
   position: absolute;
   top: 0;
@@ -274,7 +244,6 @@ checkRememberedUser()
   100% { transform: rotate(360deg); }
 }
 
-/* 优化圆形装饰动效和样式 */
 .circle {
   position: absolute;
   border-radius: 50%;
@@ -289,9 +258,9 @@ checkRememberedUser()
   height: 400px;
   top: -200px;
   right: -120px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(99, 102, 241, 0.1));
   animation-delay: 0s;
-  box-shadow: 0 0 80px rgba(255,255,255,0.1);
+  box-shadow: 0 0 80px rgba(139,92,246,0.2);
 }
 
 .circle-2 {
@@ -299,9 +268,9 @@ checkRememberedUser()
   height: 300px;
   bottom: -150px;
   left: -100px;
-  background: linear-gradient(225deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(225deg, rgba(59, 130, 246, 0.25), rgba(34, 211, 238, 0.1));
   animation-delay: -2s;
-  box-shadow: 0 0 60px rgba(255,255,255,0.08);
+  box-shadow: 0 0 60px rgba(59,130,246,0.15);
 }
 
 .circle-3 {
@@ -309,7 +278,7 @@ checkRememberedUser()
   height: 200px;
   top: 40%;
   left: 15%;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+  background: linear-gradient(45deg, rgba(168, 85, 247, 0.2), rgba(255, 255, 255, 0));
   animation-delay: -5s;
 }
 
@@ -318,7 +287,7 @@ checkRememberedUser()
   height: 150px;
   bottom: 20%;
   right: 10%;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(99, 102, 241, 0.15);
   animation-delay: -8s;
 }
 
@@ -327,11 +296,10 @@ checkRememberedUser()
   height: 220px;
   top: 10%;
   right: 20%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent);
   animation-delay: -3s;
 }
 
-/* 优化浮动动画 */
 @keyframes float {
   0% {
     transform: translateY(0px) translateX(0px) rotate(0deg);
@@ -344,7 +312,6 @@ checkRememberedUser()
   }
 }
 
-/* 登录卡片 - 增强质感 */
 .login-card {
   display: flex;
   width: 980px;
@@ -371,10 +338,9 @@ checkRememberedUser()
       0 0 60px rgba(255,255,255,0.15) inset;
 }
 
-/* 左侧区域 - 优化渐变和装饰 */
 .login-left {
   flex: 1;
-  background: linear-gradient(145deg, #409effdd, #67c23add);
+  background: linear-gradient(145deg, #6366f1dd, #8b5cf6dd);
   backdrop-filter: blur(10px);
   color: white;
   padding: 70px 50px;
@@ -398,7 +364,6 @@ checkRememberedUser()
   pointer-events: none;
 }
 
-/* 左侧新增装饰点 */
 .left-decoration {
   position: absolute;
   bottom: 30px;
@@ -462,7 +427,7 @@ checkRememberedUser()
   margin-top: 40px;
 }
 
-.icon-user {
+.icon-admin {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -478,7 +443,7 @@ checkRememberedUser()
   position: relative;
 }
 
-.icon-user::after {
+.icon-admin::after {
   content: '';
   position: absolute;
   top: 10px;
@@ -489,12 +454,11 @@ checkRememberedUser()
   border: 1px solid rgba(255,255,255,0.2);
 }
 
-.icon-user:hover {
+.icon-admin:hover {
   transform: scale(1.08) rotate(5deg);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
-/* 右侧区域 */
 .login-right {
   flex: 1;
   padding: 60px 50px;
@@ -512,7 +476,7 @@ checkRememberedUser()
   left: 0;
   width: 100%;
   height: 6px;
-  background: linear-gradient(90deg, #409eff, #67c23a);
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
   border-radius: 3px 3px 0 0;
 }
 
@@ -526,7 +490,7 @@ checkRememberedUser()
   font-weight: 700;
   color: #1f2f3f;
   margin-bottom: 10px;
-  background: linear-gradient(120deg, #409eff, #67c23a);
+  background: linear-gradient(120deg, #6366f1, #8b5cf6);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -539,12 +503,10 @@ checkRememberedUser()
   letter-spacing: 0.8px;
 }
 
-/* 表单项样式优化 */
 .login-form {
   width: 100%;
 }
 
-/* 输入框样式增强 */
 .login-input {
   transition: all 0.3s ease;
 }
@@ -560,14 +522,14 @@ checkRememberedUser()
 }
 
 :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 5px 15px rgba(64, 158, 255, 0.15);
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.15);
   background-color: #fff;
   transform: translateY(-1px);
 }
 
 :deep(.el-input__wrapper.is-focus) {
-  border-color: #409eff;
-  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.25);
+  border-color: #6366f1;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
   background-color: #fff;
   transform: translateY(-2px);
 }
@@ -580,7 +542,7 @@ checkRememberedUser()
 }
 
 :deep(.el-input__prefix) {
-  color: #409eff;
+  color: #6366f1;
   font-size: 18px;
 }
 
@@ -592,7 +554,6 @@ checkRememberedUser()
   margin-bottom: 0;
 }
 
-/* 复选框样式优化 */
 .remember-checkbox {
   --el-checkbox-text-color: #4a5568;
   font-weight: 500;
@@ -606,33 +567,20 @@ checkRememberedUser()
 }
 
 :deep(.el-checkbox__inner:hover) {
-  border-color: #409eff;
+  border-color: #6366f1;
 }
 
-.forgot-password {
-  float: right;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.forgot-password:hover {
-  color: #67c23a !important;
-  transform: translateX(2px);
-}
-
-/* 登录按钮 - 增强视觉效果 */
 .login-btn {
   width: 100%;
   height: 56px;
   border-radius: 16px;
   font-size: 17px;
   font-weight: 600;
-  background: linear-gradient(105deg, #409eff 0%, #67c23a 100%);
+  background: linear-gradient(105deg, #6366f1 0%, #8b5cf6 100%);
   border: none;
   transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
   letter-spacing: 1.2px;
-  box-shadow: 0 10px 25px rgba(64, 158, 255, 0.3);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -654,16 +602,15 @@ checkRememberedUser()
 
 .login-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(64, 158, 255, 0.45);
-  background: linear-gradient(105deg, #66b1ff, #85ce4b);
+  box-shadow: 0 15px 30px rgba(99, 102, 241, 0.45);
+  background: linear-gradient(105deg, #818cf8, #a78bfa);
 }
 
 .login-btn:active {
   transform: translateY(1px);
-  box-shadow: 0 8px 20px rgba(64, 158, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
 }
 
-/* 登录页脚 */
 .login-footer {
   text-align: center;
   margin-top: 35px;
@@ -671,61 +618,31 @@ checkRememberedUser()
   font-size: 15px;
 }
 
-.login-footer p {
-  margin: 0;
-}
-
-.register-link {
+.back-link {
   font-weight: 600;
   position: relative;
 }
 
-.register-link::after {
+.back-link::after {
   content: '';
   position: absolute;
   bottom: -2px;
   left: 0;
   width: 0;
   height: 2px;
-  background: #67c23a;
+  background: #8b5cf6;
   transition: width 0.3s ease;
 }
 
-.register-link:hover::after {
+.back-link:hover::after {
   width: 100%;
 }
 
-.admin-link-wrapper {
-  margin-top: 12px;
-}
-
-.admin-link {
-  font-weight: 500;
-  font-size: 14px;
-  position: relative;
-}
-
-.admin-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: #409eff;
-  transition: width 0.3s ease;
-}
-
-.admin-link:hover::after {
-  width: 100%;
-}
-
-/* 响应式设计 - 确保移动端也铺满屏幕 */
 @media (max-width: 768px) {
   .login-card {
     flex-direction: column;
     width: 95%;
-    height: 95vh; /* 移动端占95%视口高度 */
+    height: 95vh;
     max-height: none;
     overflow-y: auto;
     border-radius: 24px;
@@ -753,7 +670,7 @@ checkRememberedUser()
     font-size: 30px;
   }
 
-  .icon-user {
+  .icon-admin {
     width: 120px;
     height: 120px;
   }
@@ -769,7 +686,6 @@ checkRememberedUser()
   }
 }
 
-/* 适配更小屏幕 */
 @media (max-width: 480px) {
   .login-container {
     padding: 0 10px;
@@ -777,7 +693,7 @@ checkRememberedUser()
 
   .login-card {
     width: 100%;
-    height: 100vh; /* 小屏完全铺满 */
+    height: 100vh;
     border-radius: 0;
   }
 

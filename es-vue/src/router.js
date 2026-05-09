@@ -15,6 +15,12 @@ import myOrder from './components/order/myOrder.vue'
 import profile from './components/user/profile.vue'
 import service from './components/message/service.vue'
 
+import adminLogin from './components/admin/a-login.vue'
+import adminHome from './components/admin/a-home.vue'
+import adminRegister from './components/admin/a-register.vue'
+import adminProduct from './components/admin/a-product.vue'
+import adminOrder from './components/admin/a-order.vue'
+
 
 
 const routes = [
@@ -31,6 +37,12 @@ const routes = [
     { path: '/myOrder', component: myOrder },
     { path: '/profile', component: profile },
     { path: '/service', component: service },
+
+    { path: '/adminLogin', component: adminLogin },
+    { path: '/adminHome', component: adminHome },
+    { path: '/adminRegister', component: adminRegister },
+    { path: '/adminProduct', component: adminProduct },
+    { path: '/adminOrder', component: adminOrder },
 ]
 
 const router = createRouter({

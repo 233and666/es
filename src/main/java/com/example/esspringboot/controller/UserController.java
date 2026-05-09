@@ -69,6 +69,7 @@ public class UserController {
         if (!user.getPassword().equals(loginUser.getPassword())) {
             return Result.error("密码错误");
         }
+
 //        session.setAttribute("loginUser", user);登录信息放到会话域
 
         // 生成JWT Token

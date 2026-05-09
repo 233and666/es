@@ -60,6 +60,20 @@ export const api={
         isFavorite: (productId) => request.get(`/favorite/isFavorite?productId=${productId}`),
         // 收藏列表
         list: () => request.get('/favorite/list')
+    },
+    admin:{
+        // 管理员登录
+        login:(loginData)=>request.post('/admin/login',loginData),
+        // 管理员注册
+        register:(adminData)=>request.post('/admin/register',adminData),
+        // 获取商品列表
+        getProductList:(params)=>request.get('/admin/list', { params }),
+        // 封禁/解封商品
+        offProduct:(id)=>request.post(`/admin/off/${id}`),
+        // 获取订单列表
+        getOrderList:(params)=>request.get('/admin/order/list', { params }),
+        // 获取订单详情
+        getOrderDetail:(id)=>request.get(`/admin/order/detail/${id}`)
     }
 
 

@@ -32,7 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
                        "/api/favorite/**",
                        "/api/order/**",
                        "/api/message/**",
-                       "/api/product/**"
+                       "/api/product/**",
+                       "/api/admin/**"
                 )
 
                 .excludePathPatterns(
@@ -41,6 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/user/logout",  // 排除退出登录
                         "/api/product/detail/*",       // 商品详情（公开访问）
                         "/api/product/search",         // 商品搜索（公开访问）
+                        "/api/admin/login",                // 管理员登录排除
                         "/uploads/**"
                         );
     }

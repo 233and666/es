@@ -1,9 +1,7 @@
 package com.example.esspringboot.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,50 +11,59 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ * 管理员表
  * </p>
  *
  * @author your_name
- * @since 2026-04-15
+ * @since 2026-05-09
  */
-
-@TableName("orders")
 @Setter
 @Getter
-public class Order implements Serializable {
+public class Admin implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-
+    /**
+     * 管理员ID
+     */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    private Long productId;
+    /**
+     * 登录用户名
+     */
+    private String username;
 
-    private Long buyerId;
+    /**
+     * 登录密码
+     */
+    private String password;
 
-    private Long sellerId;
+    /**
+     * 角色：0普通管理员，1超级管理员
+     */
+    private Boolean role;
 
-    private String status;         //待确认/已完成/已取消
+    /**
+     * 状态：0禁用，1启用
+     */
+    private Boolean status;
 
+    /**
+     * 创建时间
+     */
     private LocalDateTime createTime;
-
-    // 关联商品信息（非数据库字段）
-    @TableField(exist = false)
-    private Product product;
-
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "Admin{" +
             "id = " + id +
-            ", productId = " + productId +
-            ", buyerId = " + buyerId +
-            ", sellerId = " + sellerId +
+            ", username = " + username +
+            ", password = " + password +
+            ", role = " + role +
             ", status = " + status +
             ", createTime = " + createTime +
-            ", product = " + product +
             "}";
     }
 }

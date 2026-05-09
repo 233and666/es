@@ -182,12 +182,17 @@ public class ProductController {
         if (!product.getUserId().equals(userId)) {
             return Result.error("无权操作此商品");
         }
+        if(product.getStatus().equals("已售")||product.getStatus().equals("封禁")){
+            return Result.error("已售或封禁商品不能进行此操作");
+        }
+
         // 下架或上架商品
         if(product.getStatus().equals("在售")){
             product.setStatus("下架");
         }else if(product.getStatus().equals("下架")){
             product.setStatus("在售");
         }
+
         try {
             boolean saveSuccess = productService.saveOrUpdate(product);
             if (saveSuccess) {
@@ -217,7 +222,11 @@ public class ProductController {
         if (!product.getUserId().equals(userId)) {
             return Result.error("无权删除此商品");
         }
-        // 删除商品
+        System.out.println("准备删除商品=======："+product);
+        if(product.getStatus().equals("已售")||product.getStatus().equals("封禁")){
+            return Result.error("已售或封禁商品不能进行此操作");
+        }
+
         try {
             boolean deleteSuccess = productService.removeById(id);
             if (deleteSuccess) {
@@ -303,7 +312,5 @@ public class ProductController {
             return Result.error("服务器异常，搜索失败");
         }
     }
-
-
 
 }
