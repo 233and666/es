@@ -60,6 +60,10 @@ export const api={
         isFavorite: (productId) => request.get(`/favorite/isFavorite?productId=${productId}`),
         // 收藏列表
         list: () => request.get('/favorite/list')
+    },
+    admin:{
+        // 管理员登录
+        login:(loginData)=>request.post('/admin/login',loginData)
     }
 
 
