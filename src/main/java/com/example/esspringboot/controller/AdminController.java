@@ -140,6 +140,7 @@ public class AdminController {
         return Result.success(result, "登录成功");
     }
 
+    //管理员获取商品列表
     @GetMapping("/list")
     public Result<IPage<Product>> adminProductList(
             @RequestParam(defaultValue = "1") int pageNum,
@@ -167,6 +168,7 @@ public class AdminController {
         return Result.success(productIPage, "获取商品列表成功");
     }
 
+    //管理员封禁/解封商品
     @PostMapping("/off/{id}")
     public Result<String> adminOffProduct(@PathVariable Long id) {
         Product product = productService.getById(id);
