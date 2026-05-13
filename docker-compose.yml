@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库服务
+  mysql:
+    image: mysql:8.0
+    container_name: second-hand-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1459929060
+      MYSQL_DATABASE: es
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - second-hand-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  # 后端服务
+  backend:
+    build:
+      context: ./ES-springboot
+      dockerfile: Dockerfile
+    container_name: second-hand-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # Docker 中数据库地址用服务名 mysql（不是 localhost）
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/es?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1459929060
+      UPLOAD_PATH: /app/uploads/          # ← Docker 中使用容器内的路径
+    volumes:
+        - ./ES-springboot/uploads:/app/uploads   # ← 挂载本地的 uploads 到容器
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - second-hand-network
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./es-vue
+      dockerfile: Dockerfile
+    container_name: second-hand-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - second-hand-network
+
+    # ========== 预留：Redis（以后需要时取消注释） ==========
+    # redis:
+    #   image: redis:7-alpine
+    #   container_name: second-hand-redis
+    #   restart: always
+    #   ports:
+    #     - "6379:6379"
+    #   networks:
+    #     - second-hand-network
+
+# 数据卷（持久化存储）
+volumes:
+  mysql_data:
+
+# 网络（容器间通信）
+networks:
+  second-hand-network:
+    driver: bridge
+
