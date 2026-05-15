@@ -35,7 +35,6 @@ public class User implements Serializable {
 
     private LocalDateTime createTime;
 
-    private Integer status;
     @Override
     public String toString() {
         return "User{" +

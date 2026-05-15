@@ -253,7 +253,7 @@ const handleLogout = () => {
 }
 
 const goToUserManage = () => {
-  router.push('/adminUser')
+  ElMessage.info('即将进入用户管理页面')
 }
 
 const goToProductManage = () => {
