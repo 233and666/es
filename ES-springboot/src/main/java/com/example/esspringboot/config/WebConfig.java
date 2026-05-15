@@ -16,7 +16,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 配置uploads目录为静态资源
+<<<<<<< HEAD
         String uploadsPath = "D:/java开发路线学习/ES-springboot/uploads/";
+=======
+        String uploadsPath = System.getenv("UPLOAD_PATH"); // 从环境变量中获取上传路径--用于docker容器
+        if (uploadsPath == null || uploadsPath.isEmpty()) {       // 本地开发默认值: D:/java开发路线学习/ES/ES-springboot/uploads/
+            uploadsPath = "D:/java开发路线学习/ES/ES-springboot/uploads/";
+        }
+
+>>>>>>> 34a88b57ccfc1c26f78e238321853fdce817fa40
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadsPath)
                 .setCachePeriod(3600)

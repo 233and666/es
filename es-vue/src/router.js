@@ -20,7 +20,10 @@ import adminHome from './components/admin/a-home.vue'
 import adminRegister from './components/admin/a-register.vue'
 import adminProduct from './components/admin/a-product.vue'
 import adminOrder from './components/admin/a-order.vue'
+<<<<<<< HEAD
 import adminUser from './components/admin/a-user.vue'
+=======
+>>>>>>> 34a88b57ccfc1c26f78e238321853fdce817fa40
 
 
 
@@ -44,8 +47,11 @@ const routes = [
     { path: '/adminRegister', component: adminRegister },
     { path: '/adminProduct', component: adminProduct },
     { path: '/adminOrder', component: adminOrder },
+<<<<<<< HEAD
     { path: '/adminUser', component: adminUser },
 
+=======
+>>>>>>> 34a88b57ccfc1c26f78e238321853fdce817fa40
 ]
 
 const router = createRouter({

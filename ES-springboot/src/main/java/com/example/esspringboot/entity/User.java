@@ -35,10 +35,13 @@ public class User implements Serializable {
 
     private LocalDateTime createTime;
 
+<<<<<<< HEAD
     private Integer status;
 
 
 
+=======
+>>>>>>> 34a88b57ccfc1c26f78e238321853fdce817fa40
     @Override
     public String toString() {
         return "User{" +
@@ -49,6 +52,7 @@ public class User implements Serializable {
             ", createTime = " + createTime +
             "}";
     }
+<<<<<<< HEAD
     public Integer getStatus() {
         return status;
     }
@@ -56,4 +60,6 @@ public class User implements Serializable {
     public void setStatus(Integer status) {
         this.status = status;
     }
+=======
+>>>>>>> 34a88b57ccfc1c26f78e238321853fdce817fa40
 }

@@ -12,11 +12,15 @@ export const api={
         //退出
        logout:()=>request.post('/user/logout'),
         //获取用户信息
+<<<<<<< HEAD
        getInfo:()=>request.get('/user/info'),
 
         list: () => request.get('/admin/user/list'),
 
         update: (data) => request.post('/admin/user/update', data)
+=======
+       getInfo:()=>request.get('/user/info')
+>>>>>>> 34a88b57ccfc1c26f78e238321853fdce817fa40
 
     },
     product:{
