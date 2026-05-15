@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.esspringboot.entity.Admin;
 import com.example.esspringboot.entity.Order;
 import com.example.esspringboot.entity.Product;
+import com.example.esspringboot.entity.User;
 import com.example.esspringboot.service.IAdminService;
 import com.example.esspringboot.service.IOrderService;
 import com.example.esspringboot.service.IProductService;
+import com.example.esspringboot.service.IUserService;
 import com.example.esspringboot.util.JwtUtil;
 import com.example.esspringboot.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,6 +41,9 @@ public class AdminController {
 
     @Autowired
     private IOrderService orderService;
+
+    @Autowired
+    private IUserService userService;
 
     /**
      * 管理员注册接口 - 只有超级管理员才能注册新管理员
@@ -250,5 +256,26 @@ public class AdminController {
         System.out.println("订单详情: " + order);
         return Result.success(order, "获取订单详情成功");
     }
-    
+
+    @GetMapping("/users")
+    public Result getAllUsers() {
+        List<User> list = userService.list();
+        return Result.success(list);
+
+    }
+
+    @PutMapping("/user/status/{id}")
+    public Result updateUserStatus(@PathVariable long id, @RequestParam Integer status) {
+        User user = new User();
+        user.setId(id);
+        user.setStatus(status);
+        // 使用 MyBatis-Plus 的 updateById 方法
+        boolean updated = userService.updateById(user);
+
+        if (updated) {
+            return Result.success("用户状态更新成功");
+        } else {
+            return Result.error("更新失败，请重试");
+        }
+    }
 }

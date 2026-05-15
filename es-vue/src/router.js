@@ -21,6 +21,8 @@ import adminRegister from './components/admin/a-register.vue'
 import adminProduct from './components/admin/a-product.vue'
 import adminOrder from './components/admin/a-order.vue'
 
+import adminUser from './components/admin/a-user.vue'
+
 
 
 const routes = [
@@ -43,6 +45,8 @@ const routes = [
     { path: '/adminRegister', component: adminRegister },
     { path: '/adminProduct', component: adminProduct },
     { path: '/adminOrder', component: adminOrder },
+
+    { path: '/adminUser', component: adminUser },
 ]
 
 const router = createRouter({
