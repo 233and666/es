@@ -69,14 +69,10 @@ public class UserController {
         if (!user.getPassword().equals(loginUser.getPassword())) {
             return Result.error("密码错误");
         }
-<<<<<<< HEAD
+
         if (user.getStatus() != null && user.getStatus() == 1) {
             return Result.error("该账号已被封禁，请联系管理员！");
         }
-
-=======
->>>>>>> 34a88b57ccfc1c26f78e238321853fdce817fa40
-
 //        session.setAttribute("loginUser", user);登录信息放到会话域
 
         // 生成JWT Token
