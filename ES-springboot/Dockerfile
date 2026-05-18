@@ -1,7 +1,7 @@
 # 使用 JDK 17 基础镜像
 FROM eclipse-temurin:17-jdk-alpine
 
-# 设置工作目录
+# 设置工作目录 把ES-springboot项目目录挂载到容器的/app目录
 WORKDIR /app
 
 # 复制打包好的 jar 文件（注意：jar 文件名要和你实际的一致）

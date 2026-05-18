@@ -1,0 +1,15 @@
+*   [33m800136d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m Merge remote-tracking branch 'origin/master'
+[31m|[m[32m\[m  
+[31m|[m *   [33mb3a80e4[m[33m ([m[1;31morigin/master[m[33m)[m 合并本地项目，不覆盖远程代码
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m34a88b5[m 看看还没有吗乱码
+[31m|[m [33m|[m *   [33m493e1b0[m Merge remote-tracking branch 'origin/master'
+[31m|[m [33m|[m [35m|[m[36m\[m  
+[31m|[m [33m|[m [35m|[m * [33m6913a5e[m update ES-springboot/src/main/resources/application.properties.
+[31m|[m [33m|[m * [36m|[m [33m59ddf11[m 看看还没有吗乱码
+[31m|[m [33m|[m [36m|[m[36m/[m  
+[31m|[m [33m|[m * [33m0023143[m 已经完成docker容器的使用
+[31m|[m [33m|[m *   [33mf54e340[m Merge remote-tracking branch 'origin/master'
+[31m|[m [33m|[m [1;31m|[m[1;32m\[m  
+[31m|[m [33m|[m [1;31m|[m * [33m11438ab[m 开始进行docker容器的部署，还没开始使用
+[31m|[m * [1;31m|[m [1;32m|[m [33mee42bf2[m 合并本地项目，不覆盖远程代码

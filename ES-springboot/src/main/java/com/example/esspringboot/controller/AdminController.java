@@ -258,14 +258,14 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public Result getAllUsers() {
+    public Result<List<User>> getAllUsers() {
         List<User> list = userService.list();
         return Result.success(list);
 
     }
 
     @PutMapping("/user/status/{id}")
-    public Result updateUserStatus(@PathVariable long id, @RequestParam Integer status) {
+    public Result<String> updateUserStatus(@PathVariable long id, @RequestParam Integer status) {
         User user = new User();
         user.setId(id);
         user.setStatus(status);

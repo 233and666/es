@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.esspringboot.cache.ProductCacheService;
 import com.example.esspringboot.entity.Product;
 import com.example.esspringboot.entity.ProductSearch;
 import com.example.esspringboot.service.IProductService;
@@ -34,6 +35,9 @@ import java.time.LocalDateTime;
 public class ProductController {
     @Autowired
     private IProductService productService;
+    @Autowired
+    private ProductCacheService productCacheService;
+
     // 发布商品
     @PostMapping("/publish")
     public Result<String> publish(
@@ -157,6 +161,8 @@ public class ProductController {
             boolean saveSuccess = productService.update(wrapper);
             System.out.println("更新商品=======："+existingProduct);
             if (saveSuccess) {
+                // 更新缓存
+                productCacheService.updateProductCache(existingProduct);
                 return Result.success("商品更新成功");
             } else {
                 return Result.error("更新失败");
@@ -230,6 +236,8 @@ public class ProductController {
         try {
             boolean deleteSuccess = productService.removeById(id);
             if (deleteSuccess) {
+                // 删除缓存
+                productCacheService.deleteProductCache(id);
                 return Result.success("商品删除成功");
             } else {
                 return Result.error("删除失败");
@@ -243,7 +251,10 @@ public class ProductController {
     //商品详细
     @GetMapping("/detail/{id}")
     public Result<Product> detail(@PathVariable Long id){
-        Product product = productService.getById(id);
+
+        Product product = productCacheService.getProductById(id);//从缓存查询商品
+        System.out.println("商品详细结束从缓存查询商品=======："+product);
+        //Product product = productService.getById(id);//从数据库查询商品
         if (product == null) {
             return Result.error("商品不存在");
         }
