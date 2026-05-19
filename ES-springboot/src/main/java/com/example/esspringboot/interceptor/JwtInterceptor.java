@@ -1,5 +1,6 @@
 package com.example.esspringboot.interceptor;
 
+import com.example.esspringboot.tokenBlack.RedisTokenBlacklist;
 import com.example.esspringboot.util.JwtUtil;
 import com.example.esspringboot.tokenBlack.TokenBlacklist;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class JwtInterceptor implements HandlerInterceptor {
     @Autowired
     private TokenBlacklist tokenBlacklist;
+    @Autowired
+    private RedisTokenBlacklist redisTokenBlacklist;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -30,7 +34,10 @@ public class JwtInterceptor implements HandlerInterceptor {
             System.out.println("获取到的JWT: " + token);//=========================
 
             // 验证JWT是否有效且不在黑名单黑名单中
-            if (JwtUtil.validateToken(token) && !tokenBlacklist.isBlacklisted(token)) {
+                                                         // 先检查本地黑名单
+            //if (JwtUtil.validateToken(token) && !tokenBlacklist.isBlacklisted(token)) {
+                                                         // 先检查Redis黑名单
+            if (JwtUtil.validateToken(token) && !redisTokenBlacklist.isBlacklisted(token)) {
                 // 将用户信息存入请求属性，供Controller使用
                 Long userId = JwtUtil.getUserIdFromToken(token);
                 request.setAttribute("userId", userId);

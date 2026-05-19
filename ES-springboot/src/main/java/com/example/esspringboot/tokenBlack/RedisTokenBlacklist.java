@@ -20,11 +20,15 @@ public class RedisTokenBlacklist {
     public void addToBlacklist(String token, long ttlSeconds) {
         String key = BLACKLIST_PREFIX + token;// 构建黑名单键
         redisTemplate.opsForValue().set(key, "blacklisted", ttlSeconds, TimeUnit.SECONDS);// 设置过期时间
+        System.out.println("把用户token添加到黑名单: =========================" + token);//
+
     }
     // 检查是否在黑名单中
     public boolean isBlacklisted(String token) {
         String key = BLACKLIST_PREFIX + token;// 构建黑名单键
+        System.out.println("检查用户token是否在黑名单中: =========================" + token);//
         return redisTemplate.hasKey(key);// 检查键是否存在
     }
-    // Redis会自动处理过期，无需手动清理
+    // Redis会自动处理过期，无需手动清理-----惰性删除和定时删除
+
 }

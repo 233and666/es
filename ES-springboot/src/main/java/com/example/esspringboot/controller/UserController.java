@@ -3,6 +3,7 @@ package com.example.esspringboot.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.esspringboot.entity.User;
 import com.example.esspringboot.service.IUserService;
+import com.example.esspringboot.tokenBlack.RedisTokenBlacklist;
 import com.example.esspringboot.util.JwtUtil;
 import com.example.esspringboot.util.Result;
 import com.example.esspringboot.tokenBlack.TokenBlacklist;
@@ -138,6 +139,10 @@ public class UserController {
 
     @Autowired
     private TokenBlacklist tokenBlacklist;
+
+    @Autowired
+    private RedisTokenBlacklist redisTokenBlacklist;
+
     @PostMapping("/logout")
     //用户退出登录 → 将Token加入黑名单 → 后续请求验证时检查黑名单 → 黑名单中的Token拒绝访问
     public Result<String> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
@@ -153,7 +158,9 @@ public class UserController {
                 System.out.println("用户退出登录 - 用户ID: " + userId + ", 用户名: " + username);
 
                 // 关键步骤：将Token加入黑名单
-                tokenBlacklist.addToBlacklist(token);
+               // tokenBlacklist.addToBlacklist(token);// 本地黑名单
+
+                redisTokenBlacklist.addToBlacklist(token, 600); // redis黑名单,过期时间60秒
 
                 return Result.success("退出登录成功，Token已立即失效");
             }

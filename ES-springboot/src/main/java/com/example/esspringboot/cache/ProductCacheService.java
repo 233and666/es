@@ -2,6 +2,7 @@ package com.example.esspringboot.cache;
 
 import com.example.esspringboot.entity.Product;
 import com.example.esspringboot.service.IProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ public class ProductCacheService {
 
     @Autowired
     private IProductService productService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 获取商品详情（带缓存）
@@ -26,9 +29,13 @@ public class ProductCacheService {
     public Product getProductById(Long id) {
         String key = PRODUCT_KEY_PREFIX + id;
 
-        // 先查缓存
-        Product cachedProduct = (Product) redisTemplate.opsForValue().get(key);
-        if (cachedProduct != null) {
+        // 先查缓存                            当使用 redisTemplate.opsForValue().get(key) 获取缓存对象时，返回的类型是 LinkedHashMap，而不是 Product 类型。
+        Object cachedObj = redisTemplate.opsForValue().get(key);//Jackson 默认将 JSON 反序列化为 LinkedHashMap，而不是你期望的 Product 类型。
+        if (cachedObj != null) {
+            //
+            // 将LinkedHashMap转换为Product对象-------
+           Product cachedProduct = objectMapper.convertValue(cachedObj, Product.class);
+
             System.out.println("从缓存查询到商品=======："+cachedProduct);
             return cachedProduct;
         }
@@ -59,4 +66,6 @@ public class ProductCacheService {
         String key = PRODUCT_KEY_PREFIX + id;
         redisTemplate.delete(key);
     }
+
+
 }

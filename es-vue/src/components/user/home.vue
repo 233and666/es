@@ -172,12 +172,12 @@ const goPage = (type) => {
 
 // 退出登录
 const handleLogout = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('rememberedUsername')
-  ElMessage.success('已安全退出')
   api.user.logout().then(()=>{
     router.push('/login')
   })
+  // localStorage.removeItem('token')
+  // localStorage.removeItem('rememberedUsername')
+  ElMessage.success('已安全退出')
 }
 
 // ✅ 修复点击空白关闭菜单，不会误触头像
